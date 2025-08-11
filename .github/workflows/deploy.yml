@@ -29,28 +29,18 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.7.5
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 1.0.0
 
-      # If your Terraform is in a subfolder, uncomment and set the path,
-      # then add -chdir=${{ env.TF_WORKING_DIR }} to the TF commands below.
-      # - name: Set working directory
-      #   run: echo "TF_WORKING_DIR=infra" >> $GITHUB_ENV
+    - name: Terraform Init
+      run: terraform init
 
-      - name: Terraform Init
-        run: terraform init -input=false
-        # run: terraform -chdir=${{ env.TF_WORKING_DIR }} init -input=false
+    - name: Terraform Plan
+      run: terraform plan
 
-      - name: Terraform Validate
-        run: terraform validate
-        # run: terraform -chdir=${{ env.TF_WORKING_DIR }} validate
+    - name: Terraform Apply
+      run: terraform apply -auto-approve
 
-      - name: Terraform Plan
-        run: terraform plan -out=tfplan -input=false
-        # run: terraform -chdir=${{ env.TF_WORKING_DIR }} plan -out=tfplan -input=false
-
-      - name: Terraform Apply (main only)
-        if: github.ref == 'refs/heads/main'
-        run: terraform apply -input=false -auto-approve tfplan
-        # run: terraform -chdir=${{ env.TF_WORKING_DIR }} apply -input=false -auto-approve tfplan
+    - name: Terraform Destroy
+      run: terraform apply -auto-approve
